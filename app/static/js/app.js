@@ -38,14 +38,36 @@ document.addEventListener("submit", function (event) {
 // Show how many approvals are waiting next to "Approvals" in the menu.
 document.addEventListener("DOMContentLoaded", function () {
   const badge = document.getElementById("approvalBadge");
-  if (!badge) return;
-  fetch("/api/approvals/count", { credentials: "same-origin" })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (data) {
-      if (data && data.pending > 0) {
-        badge.textContent = data.pending;
-        badge.classList.remove("d-none");
-      }
-    })
-    .catch(function () {});
+  if (badge) {
+    fetch("/api/approvals/count", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && data.pending > 0) {
+          badge.textContent = data.pending;
+          badge.classList.remove("d-none");
+        }
+      })
+      .catch(function () {});
+  }
+
+  const shell = document.querySelector(".app-shell");
+  const toggle = document.querySelector("[data-sidebar-toggle]");
+  const close = document.querySelector("[data-sidebar-close]");
+  if (!shell || !toggle) return;
+
+  function setSidebarOpen(open) {
+    shell.classList.toggle("sidebar-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  }
+
+  toggle.addEventListener("click", function () {
+    setSidebarOpen(!shell.classList.contains("sidebar-open"));
+  });
+  if (close) close.addEventListener("click", function () { setSidebarOpen(false); });
+  shell.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
+    link.addEventListener("click", function () { setSidebarOpen(false); });
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") setSidebarOpen(false);
+  });
 });
