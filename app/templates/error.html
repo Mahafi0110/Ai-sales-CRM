@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} · {{ app_name }}{% endblock %}
+{% block public %}
+<div class="login-wrap d-flex align-items-center justify-content-center">
+  <div class="text-center">
+    <div class="display-4 fw-semibold">{{ code }}</div>
+    <p class="text-muted">{{ message }}</p>
+    <a class="btn btn-primary" href="/dashboard">Back to the dashboard</a>
+  </div>
+</div>
+{% endblock %}

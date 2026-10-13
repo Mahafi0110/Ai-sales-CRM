@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Customers · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Customers</h1>
+  <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#newCustomer"><i class="bi bi-plus-lg"></i> New customer</button>
+</div>
+
+<div class="collapse mb-3" id="newCustomer">
+  <div class="card"><div class="card-body">
+    <form method="post" action="/customers" class="row g-3">
+      <div class="col-md-4"><label class="form-label">Name *</label><input class="form-control" name="name" required></div>
+      <div class="col-md-4"><label class="form-label">Email</label><input class="form-control" type="email" name="email"></div>
+      <div class="col-md-4"><label class="form-label">Phone</label><input class="form-control" name="phone"></div>
+      <div class="col-md-4"><label class="form-label">Company</label><input class="form-control" name="company"></div>
+      <div class="col-md-4"><label class="form-label">Industry</label><input class="form-control" name="industry"></div>
+      {% if team %}
+      <div class="col-md-4"><label class="form-label">Owner</label>
+        <select class="form-select" name="owner_id"><option value="">Me</option>
+          {% for u in team %}<option value="{{ u.id }}">{{ u.full_name }}</option>{% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+      <div class="col-12"><button class="btn btn-primary">Save customer</button></div>
+    </form>
+  </div></div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-6"><input class="form-control" name="q" value="{{ q }}" placeholder="Search name, email or company"></div>
+  <div class="col-auto"><button class="btn btn-outline-secondary">Search</button></div>
+</form>
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Industry</th><th>Owner</th><th>Added</th></tr></thead>
+    <tbody>
+    {% for c in customers %}
+      <tr>
+        <td><a href="/customers/{{ c.id }}">{{ c.name }}</a></td>
+        <td>{{ c.company or '-' }}</td><td>{{ c.email or '-' }}</td><td>{{ c.industry or '-' }}</td>
+        <td>{{ c.owner.full_name if c.owner else '-' }}</td>
+        <td class="text-muted">{{ c.created_at|date }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">No customers found.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

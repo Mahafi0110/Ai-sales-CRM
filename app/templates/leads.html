@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Leads · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Leads</h1>
+  <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#newLead"><i class="bi bi-plus-lg"></i> New lead</button>
+</div>
+
+<div class="collapse mb-3" id="newLead">
+  <div class="card"><div class="card-body">
+    <form method="post" action="/leads" class="row g-3">
+      <div class="col-md-4"><label class="form-label">Name *</label><input class="form-control" name="name" required></div>
+      <div class="col-md-4"><label class="form-label">Email</label><input class="form-control" name="email" type="email"></div>
+      <div class="col-md-4"><label class="form-label">Phone</label><input class="form-control" name="phone"></div>
+      <div class="col-md-4"><label class="form-label">Company</label><input class="form-control" name="company"></div>
+      <div class="col-md-4"><label class="form-label">Source</label>
+        <input class="form-control" name="source" list="sources" placeholder="website, referral, event...">
+        <datalist id="sources"><option>website</option><option>referral</option><option>event</option><option>cold outreach</option><option>social media</option></datalist>
+      </div>
+      {% if team %}
+      <div class="col-md-4"><label class="form-label">Owner</label>
+        <select class="form-select" name="owner_id"><option value="">Me</option>
+          {% for u in team %}<option value="{{ u.id }}">{{ u.full_name }}</option>{% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+      <div class="col-12"><button class="btn btn-primary">Save lead</button></div>
+    </form>
+  </div></div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-5"><input class="form-control" name="q" value="{{ q }}" placeholder="Search name, email or company"></div>
+  <div class="col-md-3">
+    <select class="form-select" name="status"><option value="">All statuses</option>
+      {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if s == status_filter }}>{{ s|capitalize }}</option>{% endfor %}
+    </select>
+  </div>
+  {% if team %}
+  <div class="col-md-3">
+    <select class="form-select" name="owner"><option value="">All owners</option>
+      {% for u in team %}<option value="{{ u.id }}" {{ 'selected' if owner == u.id|string }}>{{ u.full_name }}</option>{% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <div class="col-auto"><button class="btn btn-outline-secondary">Filter</button></div>
+</form>
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Status</th><th>Owner</th><th>Added</th></tr></thead>
+    <tbody>
+    {% for l in leads %}
+      <tr>
+        <td><a href="/leads/{{ l.id }}">{{ l.name }}</a></td>
+        <td>{{ l.company or '-' }}</td><td>{{ l.email or '-' }}</td>
+        <td>{{ badge(l.status) }}</td>
+        <td>{{ l.owner.full_name if l.owner else '-' }}</td>
+        <td class="text-muted">{{ l.created_at|date }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">No leads found.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

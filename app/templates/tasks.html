@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Tasks · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Tasks</h1>
+  <ul class="nav nav-pills">
+    {% for key, label in [("open", "Open"), ("overdue", "Overdue"), ("done", "Done")] %}
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == key }}" href="/tasks?view={{ key }}">{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card mb-3"><div class="card-body">
+  <form method="post" action="/tasks" class="row g-2">
+    <div class="col-md-5"><input class="form-control" name="title" placeholder="New task" required></div>
+    <div class="col-md-3"><input class="form-control" type="date" name="due_date"></div>
+    {% if team %}
+    <div class="col-md-2">
+      <select class="form-select" name="assigned_to_id"><option value="">Me</option>
+        {% for u in team %}<option value="{{ u.id }}">{{ u.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div class="col-auto"><button class="btn btn-primary">Add task</button></div>
+  </form>
+</div></div>
+
+<div class="card"><div class="table-responsive">
+  <table class="table mb-0">
+    <thead><tr><th style="width:3rem"></th><th>Task</th><th>Linked to</th><th>Assigned to</th><th>Due</th></tr></thead>
+    <tbody>
+    {% for t in tasks %}
+      <tr>
+        <td>
+          <form method="post" action="/tasks/{{ t.id }}/toggle" class="m-0">
+            <input type="hidden" name="next" value="/tasks?view={{ view }}">
+            <button class="btn btn-sm btn-outline-secondary py-0" title="{{ 'Mark done' if t.status == 'open' else 'Reopen' }}">
+              <i class="bi bi-{{ 'square' if t.status == 'open' else 'check-square' }}"></i>
+            </button>
+          </form>
+        </td>
+        <td class="{{ 'text-decoration-line-through text-muted' if t.status == 'done' }}">{{ t.title }}</td>
+        <td>
+          {% if t.lead %}<a href="/leads/{{ t.lead_id }}">{{ t.lead.name }}</a>
+          {% elif t.customer %}<a href="/customers/{{ t.customer_id }}">{{ t.customer.name }}</a>
+          {% else %}-{% endif %}
+        </td>
+        <td>{{ t.assigned_to.full_name if t.assigned_to else '-' }}</td>
+        <td class="{{ 'text-danger' if t.status == 'open' and t.due_date and t.due_date < today() }}">{{ t.due_date|date }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="text-center text-muted py-4">Nothing here.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

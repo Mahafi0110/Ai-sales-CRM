@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ document.title }} · {{ app_name }}{% endblock %}
+{% block content %}
+<a href="/knowledge" class="small text-decoration-none">&larr; All documents</a>
+<div class="d-flex justify-content-between align-items-center mt-2 mb-1">
+  <h1 class="h3 mb-0">{{ document.title }}</h1>
+  {% if can_manage %}<form method="post" action="/knowledge/{{ document.id }}/delete" class="m-0" onsubmit="return confirm('Delete this document?')"><button class="btn btn-outline-danger btn-sm">Delete</button></form>{% endif %}
+</div>
+<p class="text-muted small">{{ document.category|replace('_', ' ')|capitalize }} · {{ document.filename or 'Pasted text' }} · {{ document.chunk_count }} passages · {{ '{:,}'.format(document.char_count) }} characters · added {{ document.created_at|date }}</p>
+<p class="small text-muted">This is how the document is cut into passages. The AI reads only the passages that match a question.</p>
+{% for c in document.chunks[:40] %}
+<div class="card mb-2"><div class="card-body py-2">
+  <div class="small text-muted mb-1">Passage {{ c.position + 1 }}{% if c.embedding %} · <span class="text-success">searchable by meaning</span>{% endif %}</div>
+  <div style="white-space: pre-wrap">{{ c.text }}</div>
+</div></div>
+{% endfor %}
+{% if document.chunks|length > 40 %}<p class="text-muted small">Showing the first 40 of {{ document.chunks|length }} passages.</p>{% endif %}
+{% endblock %}

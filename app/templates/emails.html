@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Email drafts · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h1 class="h3 mb-0">Emails</h1>
+  <ul class="nav nav-pills">
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'draft' }}" href="/emails">Drafts</a></li>
+    <li class="nav-item"><a class="nav-link {{ 'active' if view == 'sent' }}" href="/emails?view=sent">Sent</a></li>
+  </ul>
+</div>
+<p class="text-muted">Written by the AI for you to review. Open a draft, edit it, then send it. Nothing leaves the app until a person presses Send (or approves the AI's request on the Approvals page).</p>
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Subject</th><th>To</th><th>For</th><th>{{ 'Sent' if view == 'sent' else 'Written' }}</th></tr></thead>
+    <tbody>
+    {% for d in drafts %}
+      <tr>
+        <td><a href="/emails/{{ d.id }}">{{ d.subject }}</a></td>
+        <td>{{ d.to_email or '-' }}</td>
+        <td>{% if d.lead %}Lead: {{ d.lead.name }}{% elif d.customer %}Customer: {{ d.customer.name }}{% else %}-{% endif %}</td>
+        <td class="text-muted">{{ (d.sent_at if view == 'sent' else d.created_at)|date }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="text-center text-muted py-4">{{ 'Nothing sent yet.' if view == 'sent' else 'No drafts yet. Open a lead or customer and click Draft.' }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

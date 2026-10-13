@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Assistant · {{ app_name }}{% endblock %}
+{% block content %}
+<a href="/assistant" class="small text-decoration-none">&larr; Back to the assistant</a>
+
+<div class="card mt-2 mb-3"><div class="card-body">
+  <div class="small text-muted mb-1">You asked</div>
+  <div style="white-space: pre-wrap">{{ run.prompt }}</div>
+</div></div>
+
+<div class="card mb-3"><div class="card-body">
+  <div class="d-flex justify-content-between">
+    <h2 class="h6">Answer</h2>
+    {% if run.status == 'step_limit' %}<span class="badge text-bg-warning">Unfinished</span>{% elif run.status == 'failed' %}<span class="badge text-bg-danger">Failed</span>{% endif %}
+  </div>
+  {% if run.error %}<div class="alert alert-danger py-2 mb-2">{{ run.error }}</div>{% endif %}
+  {% if run.answer %}<div style="white-space: pre-wrap">{{ run.answer }}</div>{% endif %}
+  <div class="small text-muted mt-3">AI can make mistakes: check important details before acting.
+    {% if run.ai_model %}Model: {{ run.ai_model }}.{% endif %}
+    {% if run.duration_ms %}Took {{ (run.duration_ms / 1000)|round(1) }}s.{% endif %}</div>
+</div></div>
+
+{% if approvals %}
+<div class="card mb-3 border-warning"><div class="card-body">
+  <h2 class="h6"><i class="bi bi-shield-check"></i> Waiting for your approval</h2>
+  <ul class="mb-2">
+    {% for a in approvals %}
+    <li>{{ a.title }} &mdash; {% if a.status == 'pending' %}<span class="badge text-bg-warning">waiting</span>{% elif a.status == 'executed' %}<span class="badge text-bg-success">done</span>{% elif a.status == 'rejected' %}<span class="badge text-bg-secondary">rejected</span>{% else %}<span class="badge text-bg-danger">{{ a.status }}</span>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  <a class="btn btn-sm btn-warning" href="/approvals">Review on the Approvals page</a>
+</div></div>
+{% endif %}
+
+<div class="card"><div class="card-body">
+  <h2 class="h6">What the assistant did</h2>
+  {% if run.trace %}
+  <ol class="list-group list-group-numbered list-group-flush">
+    {% for t in run.trace %}
+    <li class="list-group-item px-0">
+      <span class="fw-semibold">{{ t.tool|replace('_', ' ')|capitalize }}</span>
+      {% if t.args %}<span class="text-muted small">({% for k, v in t.args.items() %}{{ k }}: {{ v }}{{ ', ' if not loop.last }}{% endfor %})</span>{% endif %}
+      {% if t.ok %}<span class="badge text-bg-success">done</span>{% else %}<span class="badge text-bg-secondary">not done</span>{% endif %}
+      {% if t.link %}<a class="small ms-1" href="{{ t.link }}">open</a>{% endif %}
+      {% if t.summary %}<div class="small text-muted text-truncate">{{ t.summary }}</div>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}<p class="text-muted small mb-0">It answered without looking anything up.</p>{% endif %}
+</div></div>
+{% endblock %}

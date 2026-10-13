@@ -1,0 +1,52 @@
+{% macro badge(value) -%}
+{%- set colors = {
+  'new': 'primary', 'contacted': 'info', 'qualified': 'success', 'unqualified': 'secondary', 'converted': 'dark',
+  'prospecting': 'secondary', 'qualification': 'info', 'proposal': 'primary', 'negotiation': 'warning',
+  'won': 'success', 'lost': 'danger', 'open': 'primary', 'done': 'success'} -%}
+<span class="badge text-bg-{{ colors.get(value, 'secondary') }}">{{ value|replace('_', ' ')|capitalize }}</span>
+{%- endmacro %}
+
+{% macro task_form(next_url, lead_id='', customer_id='', opportunity_id='') -%}
+<form method="post" action="/tasks" class="row g-2">
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <input type="hidden" name="lead_id" value="{{ lead_id }}">
+  <input type="hidden" name="customer_id" value="{{ customer_id }}">
+  <input type="hidden" name="opportunity_id" value="{{ opportunity_id }}">
+  <div class="col-12"><input class="form-control form-control-sm" name="title" placeholder="New task, e.g. Call to follow up" required></div>
+  <div class="col-8"><input class="form-control form-control-sm" type="date" name="due_date"></div>
+  <div class="col-4"><button class="btn btn-sm btn-outline-primary w-100">Add task</button></div>
+</form>
+{%- endmacro %}
+
+{% macro task_list(tasks, next_url) -%}
+{% if tasks %}
+<ul class="list-group list-group-flush mb-3">
+  {% for t in tasks %}
+  <li class="list-group-item px-0 d-flex align-items-center gap-2">
+    <form method="post" action="/tasks/{{ t.id }}/toggle" class="m-0">
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <button class="btn btn-sm btn-outline-secondary py-0" title="Mark done"><i class="bi bi-square"></i></button>
+    </form>
+    <div class="flex-grow-1">{{ t.title }}</div>
+    {% if t.due_date %}<small class="{{ 'text-danger' if t.due_date < today() else 'text-muted' }}">{{ t.due_date|date }}</small>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}<p class="text-muted small">No open tasks.</p>{% endif %}
+{%- endmacro %}
+
+{% macro draft_form(action, ai_ready) -%}
+<form method="post" action="{{ action }}" class="row g-2">
+  <div class="col-12"><input class="form-control form-control-sm" name="goal" placeholder="What should the email do? (optional)" maxlength="500"></div>
+  <div class="col-7">
+    <select class="form-select form-select-sm" name="tone" aria-label="Tone">
+      <option value="friendly">Friendly</option><option value="formal">Formal</option><option value="brief">Brief</option>
+    </select>
+  </div>
+  <div class="col-5"><button class="btn btn-sm btn-outline-primary w-100" {{ 'disabled' if not ai_ready }}><i class="bi bi-magic"></i> Draft</button></div>
+</form>
+{%- endmacro %}
+
+{% macro ai_setup_hint(ai_ready) -%}
+{% if not ai_ready %}<p class="small text-muted mt-2 mb-0">AI is not set up yet. Add a free <code>GOOGLE_API_KEY</code> to <code>.env</code> and restart.</p>{% endif %}
+{%- endmacro %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% from "_macros.html" import ai_setup_hint %}
+{% block title %}Knowledge · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1"><i class="bi bi-journal-text"></i> Company knowledge</h1>
+<p class="text-muted">Documents the AI can look things up in: price lists, product sheets, sales playbooks, policies. When it scores a lead or writes an email, it reads the relevant passages first, so it uses your real facts instead of guessing.</p>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Documents</div><div class="h3 mb-0">{{ stats.documents }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Passages</div><div class="h3 mb-0">{{ stats.passages }}</div>{% if stats.passages > stats.capacity * 0.8 %}<div class="small text-danger">Nearly full (limit {{ '{:,}'.format(stats.capacity) }})</div>{% endif %}</div></div></div>
+  <div class="col-12 col-lg-6"><div class="card h-100"><div class="card-body">
+    <div class="text-muted small">Search by meaning</div>
+    {% if stats.semantic_enabled %}
+      <div><span class="badge text-bg-success">On</span> {{ stats.embedded_passages }} of {{ stats.passages }} passages ready</div>
+      {% if can_manage and stats.embedded_passages < stats.passages %}
+      <form method="post" action="/knowledge/reindex" class="mt-2"><button class="btn btn-sm btn-outline-primary">Re-index the rest</button></form>
+      {% endif %}
+    {% else %}
+      <div><span class="badge text-bg-secondary">Off</span> Keyword search only (it still works well).</div>
+      <div class="small text-muted mt-1">Add a free <code>GOOGLE_API_KEY</code> to <code>.env</code> to also find passages by meaning.</div>
+    {% endif %}
+  </div></div></div>
+</div>
+
+<div class="card mb-3"><div class="card-body">
+  <h2 class="h6">Try a search</h2>
+  <form method="get" action="/knowledge" class="d-flex gap-2">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="e.g. how much does the starter plan cost?">
+    <button class="btn btn-outline-primary">Search</button>
+  </form>
+  {% if searched %}
+    <div class="mt-3">
+    {% for h in hits %}
+      <div class="border rounded p-2 mb-2">
+        <div class="d-flex justify-content-between"><a class="fw-semibold" href="/knowledge/{{ h.document_id }}">{{ h.title }}</a>
+          <span class="badge text-bg-light border">{{ {'both': 'keyword + meaning', 'semantic': 'meaning', 'keyword': 'keyword'}[h.via] }}</span></div>
+        <div class="small" style="white-space: pre-wrap">{{ h.text }}</div>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">Nothing relevant found. The AI would also find nothing, and is told not to make things up.</p>
+    {% endfor %}
+    </div>
+  {% endif %}
+</div></div>
+
+{% if can_manage %}
+<div class="card mb-3"><div class="card-body">
+  <h2 class="h6">Add a document</h2>
+  <form method="post" action="/knowledge" enctype="multipart/form-data" class="row g-3">
+    <div class="col-md-6"><label class="form-label">Title *</label><input class="form-control" name="title" placeholder="e.g. 2026 price list" maxlength="200"></div>
+    <div class="col-md-6"><label class="form-label">Type</label>
+      <select class="form-select" name="category">{% for c in categories %}<option value="{{ c }}">{{ c|replace('_', ' ')|capitalize }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Upload a file (.pdf, .docx, .txt, .md; up to 5 MB)</label><input class="form-control" type="file" name="file" accept=".pdf,.docx,.txt,.md,.markdown"></div>
+    <div class="col-md-6"><label class="form-label">...or paste the text</label><textarea class="form-control" name="text" rows="3"></textarea></div>
+    <div class="col-12"><button class="btn btn-primary">Add document</button>
+      <span class="small text-muted ms-2">Only the text is kept, not the file. Do not add anything confidential you would not want the AI service to see.</span></div>
+  </form>
+</div></div>
+{% endif %}
+
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Title</th><th>Type</th><th>Source</th><th>Passages</th><th>Added</th>{% if can_manage %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for d in documents %}
+      <tr>
+        <td><a href="/knowledge/{{ d.id }}">{{ d.title }}</a></td>
+        <td>{{ d.category|replace('_', ' ')|capitalize }}</td>
+        <td>{{ d.filename or 'Pasted text' }}</td>
+        <td>{{ d.chunk_count }}</td>
+        <td class="text-muted">{{ d.created_at|date }}</td>
+        {% if can_manage %}<td><form method="post" action="/knowledge/{{ d.id }}/delete" class="m-0" onsubmit="return confirm('Delete this document?')"><button class="btn btn-sm btn-outline-danger py-0">Delete</button></form></td>{% endif %}
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center text-muted py-4">No documents yet.{% if can_manage %} Add your price list or sales playbook above.{% else %} Ask a manager to add some.{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

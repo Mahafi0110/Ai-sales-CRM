@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% block title %}Pipeline · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Sales pipeline</h1>
+  <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#newDeal"><i class="bi bi-plus-lg"></i> New deal</button>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Open deals</div><div class="h3 mb-0">{{ summary.open_count }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Open value</div><div class="h3 mb-0">{{ summary.open_value|money }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Won value</div><div class="h3 mb-0">{{ summary.won_value|money }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="card-body"><div class="text-muted small">Win rate</div><div class="h3 mb-0">{{ (summary.win_rate ~ '%') if summary.win_rate is not none else 'n/a' }}</div></div></div></div>
+</div>
+
+<div class="collapse mb-3" id="newDeal">
+  <div class="card"><div class="card-body">
+    {% if customers %}
+    <form method="post" action="/pipeline" class="row g-3">
+      <div class="col-md-4"><label class="form-label">Deal title *</label><input class="form-control" name="title" required></div>
+      <div class="col-md-4"><label class="form-label">Customer *</label>
+        <select class="form-select" name="customer_id" required>
+          {% for c in customers %}<option value="{{ c.id }}">{{ c.name }}{% if c.company %} ({{ c.company }}){% endif %}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4"><label class="form-label">Value</label><input class="form-control" name="value" type="number" min="0" step="0.01" value="0"></div>
+      <div class="col-md-4"><label class="form-label">Expected close date</label><input class="form-control" name="expected_close_date" type="date"></div>
+      <div class="col-md-4"><label class="form-label">Stage</label>
+        <select class="form-select" name="stage">{% for s in stages %}<option value="{{ s }}">{{ s|capitalize }}</option>{% endfor %}</select>
+      </div>
+      {% if team %}
+      <div class="col-md-4"><label class="form-label">Owner</label>
+        <select class="form-select" name="owner_id"><option value="">Customer's owner</option>
+          {% for u in team %}<option value="{{ u.id }}">{{ u.full_name }}</option>{% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-12"><button class="btn btn-primary">Save deal</button></div>
+    </form>
+    {% else %}
+    <p class="mb-0">A deal belongs to a customer. <a href="/customers">Add a customer</a> first (or convert a lead).</p>
+    {% endif %}
+  </div></div>
+</div>
+
+<div class="board">
+  {% for col in columns %}
+  <div class="board-col">
+    <h2>{{ col.stage }} <span class="text-muted">({{ col['items']|length }})</span></h2>
+    {% for o in col['items'] %}
+    <div class="card deal-card"><div class="card-body p-2">
+      <div class="fw-semibold">{{ o.title }}</div>
+      <a class="small" href="/customers/{{ o.customer_id }}">{{ o.customer.name }}</a>
+      <div class="d-flex justify-content-between small mt-1">
+        <span>{{ o.value|money }}</span><span class="text-muted">{{ o.expected_close_date|date }}</span>
+      </div>
+      <div class="small text-muted mb-1">{{ o.owner.full_name if o.owner else '' }}</div>
+      <form method="post" action="/opportunities/{{ o.id }}/stage" class="m-0">
+        <input type="hidden" name="next" value="/pipeline">
+        <select class="form-select form-select-sm" name="stage" data-autosubmit aria-label="Move to stage">
+          {% for s in stages %}<option value="{{ s }}" {{ 'selected' if s == o.stage }}>{{ s|capitalize }}</option>{% endfor %}
+        </select>
+      </form>
+    </div></div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, task_form, task_list, draft_form, ai_setup_hint %}
+{% block title %}{{ lead.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<a href="/leads" class="small text-decoration-none">&larr; All leads</a>
+<div class="d-flex align-items-center gap-3 mt-2 mb-3">
+  <h1 class="h3 mb-0">{{ lead.name }}</h1>{{ badge(lead.status) }}
+  {% if lead.score is not none %}<span class="badge text-bg-light border">Score {{ lead.score }}</span>{% endif %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card"><div class="card-body">
+      <h2 class="h6 mb-3">Details</h2>
+      <form method="post" action="/leads/{{ lead.id }}/edit" class="row g-3">
+        <div class="col-md-6"><label class="form-label">Name</label><input class="form-control" name="name" value="{{ lead.name }}" required></div>
+        <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" type="email" name="email" value="{{ lead.email or '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ lead.phone or '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Company</label><input class="form-control" name="company" value="{{ lead.company or '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Source</label><input class="form-control" name="source" value="{{ lead.source or '' }}"></div>
+        <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="4">{{ lead.notes or '' }}</textarea></div>
+        <div class="col-12"><button class="btn btn-primary">Save changes</button></div>
+      </form>
+    </div></div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-3"><div class="card-body">
+      <h2 class="h6">Owner</h2>
+      <p class="mb-2">{{ lead.owner.full_name if lead.owner else 'Nobody yet' }}</p>
+      {% if team %}
+      <form method="post" action="/leads/{{ lead.id }}/assign" class="d-flex gap-2">
+        <select class="form-select form-select-sm" name="owner_id">
+          {% for u in team %}<option value="{{ u.id }}" {{ 'selected' if u.id == lead.owner_id }}>{{ u.full_name }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-sm btn-outline-secondary">Assign</button>
+      </form>
+      {% endif %}
+    </div></div>
+
+    <div class="card mb-3"><div class="card-body">
+      <h2 class="h6">Progress</h2>
+      {% if lead.status == 'converted' %}
+        <p class="mb-0">This lead is now a customer. <a href="/customers/{{ lead.customer_id }}">Open customer</a></p>
+      {% else %}
+        <form method="post" action="/leads/{{ lead.id }}/status" class="d-flex gap-2 mb-3">
+          <select class="form-select form-select-sm" name="status">
+            {% for s in statuses %}<option value="{{ s }}" {{ 'selected' if s == lead.status }}>{{ s|capitalize }}</option>{% endfor %}
+          </select>
+          <button class="btn btn-sm btn-outline-secondary">Update</button>
+        </form>
+        <form method="post" action="/leads/{{ lead.id }}/convert">
+          <button class="btn btn-success w-100"><i class="bi bi-arrow-right-circle"></i> Convert to customer</button>
+        </form>
+      {% endif %}
+    </div></div>
+
+    <div class="card mb-3"><div class="card-body">
+      <h2 class="h6"><i class="bi bi-stars"></i> AI assessment</h2>
+      {% set a = lead.ai_analysis %}
+      {% if a %}
+        <div class="d-flex align-items-baseline gap-2 mb-2">
+          <span class="display-6 fw-semibold">{{ a.score }}</span><span class="text-muted">/ 100</span>
+          <span class="ms-auto small">Suggests: {{ badge(a.recommended_status) }}</span>
+        </div>
+        <p class="small">{{ a.summary }}</p>
+        {% if a.strengths %}<div class="small fw-semibold">Strengths</div><ul class="small">{% for x in a.strengths %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+        {% if a.gaps %}<div class="small fw-semibold">Missing or unclear</div><ul class="small">{% for x in a.gaps %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+        <div class="small fw-semibold">Suggested next steps</div><ul class="small">{% for x in a.next_actions %}<li>{{ x }}</li>{% endfor %}</ul>
+        {% if lead.status != 'converted' and a.recommended_status != lead.status %}
+        <form method="post" action="/leads/{{ lead.id }}/status" class="mb-2">
+          <input type="hidden" name="status" value="{{ a.recommended_status }}">
+          <button class="btn btn-sm btn-outline-success w-100">Use suggested status: {{ a.recommended_status|capitalize }}</button>
+        </form>
+        {% endif %}
+        {% if a.knowledge_sources %}<div class="small text-muted mb-1"><i class="bi bi-journal-text"></i> Used company knowledge: {{ a.knowledge_sources|join(', ') }}</div>{% endif %}
+        <div class="small text-muted mb-2">Written by {{ a.model }}. A suggestion only: you decide.</div>
+      {% else %}
+        <p class="small text-muted">Let the AI read this lead and suggest a score and next steps.</p>
+      {% endif %}
+      <form method="post" action="/leads/{{ lead.id }}/qualify">
+        <button class="btn btn-sm btn-primary w-100" {{ 'disabled' if not ai_ready }}>{{ 'Run again' if a else 'Qualify with AI' }}</button>
+      </form>
+      {{ ai_setup_hint(ai_ready) }}
+    </div></div>
+
+    <div class="card mb-3"><div class="card-body">
+      <h2 class="h6"><i class="bi bi-envelope-paper"></i> Follow-up email</h2>
+      {{ draft_form("/leads/" ~ lead.id ~ "/email-draft", ai_ready) }}
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <h2 class="h6">Tasks</h2>
+      {{ task_list(tasks, "/leads/" ~ lead.id) }}
+      {{ task_form("/leads/" ~ lead.id, lead_id=lead.id) }}
+    </div></div>
+  </div>
+</div>
+{% endblock %}

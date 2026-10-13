@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, task_list %}
+{% block title %}Dashboard · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Welcome, {{ user.full_name }}</h1>
+<p class="text-muted mb-4">{% if user.role == 'sales_rep' %}Here is your own work.{% else %}Here is the whole team's work.{% endif %}</p>
+
+<div class="row g-3 mb-4">
+  {% for label, icon, value, link in [
+    ("Open leads", "person-lines-fill", stats.open_leads, "/leads"),
+    ("Customers", "buildings", stats.customers, "/customers"),
+    ("Open deals", "kanban", stats.open_opportunities, "/pipeline"),
+    ("Pipeline value", "cash-stack", stats.pipeline_value|money, "/pipeline"),
+    ("Open tasks", "check2-square", stats.open_tasks, "/tasks"),
+    ("Overdue tasks", "exclamation-triangle", stats.overdue_tasks, "/tasks?view=overdue"),
+    ("Waiting approvals", "shield-check", stats.pending_approvals, "/approvals"),
+    ("Won value", "trophy", stats.won_value|money, "/pipeline"),
+    ("Win rate", "percent", (stats.win_rate ~ "%") if stats.win_rate is not none else "n/a", "/pipeline")] %}
+  <div class="col-6 col-xl-3">
+    <a href="{{ link }}" class="text-decoration-none text-reset">
+      <div class="card stat-card h-100"><div class="card-body">
+        <div class="text-muted small"><i class="bi bi-{{ icon }}"></i> {{ label }}</div>
+        <div class="h2 fw-semibold mb-0">{{ value }}</div>
+      </div></div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h6">Pipeline by stage</h2>
+      {% set biggest = pipeline.stages|map(attribute='count')|max or 1 %}
+      {% for s in pipeline.stages %}
+      <div class="mb-2">
+        <div class="d-flex justify-content-between small"><span>{{ s.stage|capitalize }}</span><span class="text-muted">{{ s.count }} · {{ s.value|money }}</span></div>
+        <div class="stage-bar" style="width: {{ (s.count / biggest * 100)|round|int }}%"></div>
+      </div>
+      {% endfor %}
+    </div></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h6">Newest leads</h2>
+      {% if stats.recent_leads %}
+      <ul class="list-group list-group-flush">
+        {% for l in stats.recent_leads %}
+        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+          <a href="/leads/{{ l.id }}">{{ l.name }}</a>{{ badge(l.status) }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="text-muted small">No leads yet. <a href="/leads">Add your first lead</a>.</p>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h6">Next tasks</h2>
+      {{ task_list(stats.upcoming_tasks, "/dashboard") }}
+    </div></div>
+  </div>
+</div>
+{% endblock %}
