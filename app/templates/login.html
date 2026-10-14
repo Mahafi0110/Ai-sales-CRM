@@ -1,24 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Sign in · {{ app_name }}{% endblock %}
 {% block public %}
-<div class="login-wrap d-flex align-items-center justify-content-center">
-  <div class="card login-card shadow-sm">
-    <div class="card-body p-4">
-      <h1 class="h4 mb-1"><i class="bi bi-stars"></i> {{ app_name }}</h1>
-      <p class="text-muted mb-4">Sign in to continue</p>
-      {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
-      <form method="post" action="/login">
-        <div class="mb-3">
-          <label class="form-label" for="email">Email</label>
-          <input class="form-control" id="email" name="email" type="email" value="{{ email or '' }}" required autofocus>
-        </div>
-        <div class="mb-3">
-          <label class="form-label" for="password">Password</label>
-          <input class="form-control" id="password" name="password" type="password" required>
-        </div>
-        <button class="btn btn-primary w-100">Sign in</button>
-      </form>
+<main class="auth-page">
+  <section class="auth-form-side" aria-label="Sign in">
+    <div class="card login-card">
+      <div class="card-body">
+        <h1 class="login-brand h4 mb-1">
+          <img src="/static/images/crm-logo.svg" alt="">
+          <span>{{ app_name }}</span>
+        </h1>
+        <p class="text-muted mb-4">Sign in to continue</p>
+        {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+        <form method="post" action="/login">
+          <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" id="email" name="email" type="email" value="{{ email or '' }}" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" id="password" name="password" type="password" required>
+          </div>
+          <button class="btn btn-primary w-100">Sign in</button>
+        </form>
+      </div>
     </div>
-  </div>
-</div>
+  </section>
+  <aside class="auth-art-side" aria-label="AI-powered sales insights">
+    <img src="/static/images/sales-insights.svg" alt="Illustration of a sales pipeline, analytics dashboard, and AI assistant">
+  </aside>
+</main>
 {% endblock %}

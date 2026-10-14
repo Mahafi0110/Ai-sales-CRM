@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function setSidebarOpen(open) {
     shell.classList.toggle("sidebar-open", open);
     toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
   }
 
   toggle.addEventListener("click", function () {
@@ -69,5 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") setSidebarOpen(false);
+  });
+  window.addEventListener("resize", function () {
+    if (window.matchMedia("(min-width: 992px)").matches) setSidebarOpen(false);
   });
 });

@@ -8,6 +8,10 @@ def test_login_page_renders(client):
     r = client.get("/login")
     assert r.status_code == 200
     assert "Sign in" in r.text
+    assert 'name="email"' in r.text
+    assert 'name="password"' in r.text
+    assert "/static/images/sales-insights.svg" in r.text
+    assert client.get("/static/images/sales-insights.svg").status_code == 200
 
 
 def test_form_login_then_dashboard_then_logout(client, make_user):

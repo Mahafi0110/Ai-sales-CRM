@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" fill="none">
+  <defs>
+    <linearGradient id="platform" x1="228" y1="256" x2="556" y2="443" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FCFF"/>
+      <stop offset="1" stop-color="#DCEAF5"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="292" y1="250" x2="462" y2="361" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDF9FC"/>
+      <stop offset="1" stop-color="#B6DDF0"/>
+    </linearGradient>
+    <linearGradient id="funnel" x1="112" y1="192" x2="181" y2="314" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9CE9EA"/>
+      <stop offset="1" stop-color="#504AE2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(0 195 -260 0 365 272)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDF7F8"/>
+      <stop offset="1" stop-color="#F8F8F2" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="57" y="94" width="614" height="397" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+  <ellipse cx="365" cy="278" fill="url(#glow)" rx="285" ry="220"/>
+  <ellipse cx="361" cy="446" fill="#798AA0" fill-opacity=".13" rx="246" ry="21" filter="url(#shadow)"/>
+
+  <g stroke="#8AA9B8" stroke-linecap="round" stroke-width="2">
+    <path d="m176 250 112 70m-36-113 82 91m222-125-111 86m-191 93-98 39m277-44 118 60"/>
+    <path d="m322 214 104-75m102 183 94-17"/>
+  </g>
+  <g fill="#fff" stroke="#95B6C4" stroke-width="2">
+    <circle cx="288" cy="320" r="5"/><circle cx="334" cy="298" r="5"/>
+    <circle cx="445" cy="259" r="5"/><circle cx="491" cy="322" r="5"/>
+    <circle cx="226" cy="390" r="5"/><circle cx="548" cy="368" r="5"/>
+  </g>
+
+  <g transform="rotate(-13 398 336)">
+    <path d="M226 303 408 229l168 58-187 78-163-62Z" fill="url(#platform)" stroke="#7999AA" stroke-width="2"/>
+    <path d="m226 303 163 62v30l-163-63v-29Z" fill="#D7E7EF" stroke="#7999AA" stroke-width="2"/>
+    <path d="m389 365 187-78v29l-187 79v-30Z" fill="#C6DCE7" stroke="#7999AA" stroke-width="2"/>
+    <path d="m300 301 108-45 90 31-111 47-87-33Z" fill="url(#screen)" stroke="#7397A8" stroke-width="2"/>
+    <path d="m332 298 8-3v19l-8 3v-19Zm16-7 8-3v19l-8 3v-19Zm16-7 8-3v19l-8 3v-19Zm16-7 8-3v19l-8 3v-19Zm16-7 8-3v19l-8 3v-19Z" fill="#5AADD0"/>
+    <path d="m336 326 51 19 75-32" stroke="#39AAB5" stroke-linecap="round" stroke-width="3"/>
+  </g>
+
+  <g>
+    <path d="m116 196 36-14 38 14-37 16-37-16Z" fill="#DDF7FA" stroke="#719CAA" stroke-width="2"/>
+    <path d="m116 196 37 16v78l-37-15v-79Z" fill="#F8FCFD" stroke="#719CAA" stroke-width="2"/>
+    <path d="m153 212 37-16v79l-37 15v-78Z" fill="#D6EDF2" stroke="#719CAA" stroke-width="2"/>
+    <path d="m116 205 37 15 37-15m-37 15v70" stroke="#719CAA" stroke-width="2"/>
+    <path d="m118 220 35 14 35-14m-70 17 35 14 35-14" stroke="#61C4D0" stroke-width="8"/>
+    <path d="m137 286 33 13-18 21-33-13 18-21Z" fill="#6574ED" stroke="#587295" stroke-width="2"/>
+    <text x="92" y="174" fill="#27394A" font-family="Arial,sans-serif" font-size="17" font-weight="600">Sales pipeline</text>
+    <rect x="185" y="222" width="74" height="21" rx="10.5" fill="#344777"/>
+    <rect x="190" y="247" width="65" height="21" rx="10.5" fill="#454A8C"/>
+    <rect x="193" y="272" width="57" height="21" rx="10.5" fill="#5549D9"/>
+    <text x="194" y="236" fill="#fff" font-family="Arial,sans-serif" font-size="10">Qualified</text>
+    <text x="199" y="261" fill="#fff" font-family="Arial,sans-serif" font-size="10">Proposal</text>
+    <text x="201" y="286" fill="#fff" font-family="Arial,sans-serif" font-size="10">Closed won</text>
+  </g>
+
+  <g transform="rotate(-12 297 165)">
+    <rect x="261" y="117" width="115" height="81" rx="9" fill="#fff" stroke="#8099A9" stroke-width="2"/>
+    <path d="M277 177v-22h12v22m8 0v-37h12v37m8 0v-29h12v29m8 0v-44h12v44" fill="#7CC9D5" stroke="#4696B2" stroke-width="2"/>
+    <path d="M275 184h84" stroke="#DDE6EA" stroke-width="2"/>
+    <text x="267" y="108" fill="#27394A" font-family="Arial,sans-serif" font-size="15" font-weight="600">Lead scoring</text>
+  </g>
+
+  <g transform="rotate(-10 511 133)">
+    <rect x="453" y="91" width="102" height="70" rx="9" fill="#fff" stroke="#8099A9" stroke-width="2"/>
+    <rect x="465" y="103" width="77" height="46" rx="4" fill="#EFF7FC"/>
+    <path d="m471 139 18-17 13 9 16-18 18 8" stroke="#7184E8" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    <text x="482" y="178" fill="#27394A" font-family="Arial,sans-serif" font-size="16" font-weight="600">Data analytics</text>
+  </g>
+
+  <g transform="rotate(-9 566 379)">
+    <rect x="513" y="337" width="124" height="87" rx="8" fill="#fff" stroke="#8099A9" stroke-width="2"/>
+    <path d="M527 400h95m-95-17h95m-95-17h95" stroke="#E4EAF0" stroke-width="1.5"/>
+    <path d="m530 398 19-8 15 3 14-18 14 5 14-20 13 1" stroke="#6C72E8" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+    <path d="M530 398v-14m48-9v-17m28-15v-13" stroke="#7CCBD0" stroke-linecap="round" stroke-width="3"/>
+    <text x="529" y="330" fill="#27394A" font-family="Arial,sans-serif" font-size="14" font-weight="600">Predictive insights</text>
+  </g>
+
+  <g>
+    <circle cx="594" cy="224" r="48" fill="#D8F4F5" fill-opacity=".76"/>
+    <circle cx="594" cy="224" r="37" fill="#EFFBFC" stroke="#729CAC" stroke-width="2"/>
+    <circle cx="594" cy="224" r="27" fill="#203A5C"/>
+    <rect x="577" y="213" width="34" height="25" rx="9" fill="#F5FFFF"/>
+    <circle cx="587" cy="224" r="3" fill="#4A65A5"/>
+    <circle cx="601" cy="224" r="3" fill="#4A65A5"/>
+    <path d="M586 231h16m-8-24v6m-11-1-4-5m26 5 4-5" stroke="#F5FFFF" stroke-linecap="round" stroke-width="2"/>
+    <circle cx="594" cy="203" r="3" fill="#46B9C4"/>
+    <text x="570" y="168" fill="#27394A" font-family="Arial,sans-serif" font-size="17" font-weight="600">AI Agent</text>
+  </g>
+
+  <g>
+    <path d="m214 407 31-13 34 13-34 14-31-14Z" fill="#E7F8FA" stroke="#7798A9" stroke-width="2"/>
+    <path d="m214 407 31 14v21l-31-13v-22Z" fill="#CFE6EF" stroke="#7798A9" stroke-width="2"/>
+    <path d="m245 421 34-14v21l-34 14v-21Z" fill="#BDD9E5" stroke="#7798A9" stroke-width="2"/>
+    <path d="m238 407 7-3 8 3-8 4-7-4Z" fill="#626BE6"/>
+    <text x="189" y="466" fill="#27394A" font-family="Arial,sans-serif" font-size="14" font-weight="600">Automated follow-ups</text>
+  </g>
+
+  <g>
+    <path d="m416 189 14-6 15 6-15 6-14-6Z" fill="#87D5D9" stroke="#6C99A9" stroke-width="2"/>
+    <path d="m416 189 14 6v17l-14-6v-17Z" fill="#62BFCB" stroke="#6C99A9" stroke-width="2"/>
+    <path d="m430 195 15-6v17l-15 6v-17Z" fill="#4C9EB8" stroke="#6C99A9" stroke-width="2"/>
+    <text x="393" y="240" fill="#27394A" font-family="Arial,sans-serif" font-size="13" font-weight="600">Pipeline acceleration</text>
+  </g>
+</svg>
